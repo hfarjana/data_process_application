@@ -88,9 +88,17 @@
     <Compile Include="Models\ComicVariantMap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ComicRepository.cs" />
     <Compile Include="Services\CsvDataLoader.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="Services\FavouriteService.cs" />
+    <Compile Include="Services\IComicRepository.cs" />
+    <Compile Include="Services\IFavouriteService.cs" />
+    <Compile Include="Services\ISearchAnalyticsService.cs" />
+    <Compile Include="Services\ISearchService.cs" />
+    <Compile Include="Services\SearchAnalyticsService.cs" />
+    <Compile Include="Services\SearchService.cs" />
     <Compile Include="Services\SpecialCharacterCleaner.cs" />
     <EmbeddedResource Include="FantasyBzaar.resx">
       <DependentUpon>FantasyBzaar.cs</DependentUpon>

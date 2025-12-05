@@ -35,23 +35,24 @@ namespace FBZapp.Services
             using (var reader = new StreamReader(_filePath, Encoding.GetEncoding("Windows-1252")))
             using (var csv = new CsvReader(reader, config))
             {
-                // ✅ CSV → ComicVariant
+               
                 csv.Context.RegisterClassMap<ComicVariantMap>();
                 var variantRows = csv.GetRecords<ComicVariant>().ToList();
 
-                // ✅ Clean raw data
                 foreach (var row in variantRows)
                 {
                     row.Title = SpecialCharacterCleaner.CleanTitle(row.Title);
                     row.Author = SpecialCharacterCleaner.CleanGeneric(row.Author);
                     row.Genre = SpecialCharacterCleaner.CleanGeneric(row.Genre);
                     row.Publisher = SpecialCharacterCleaner.CleanGeneric(row.Publisher);
-                    
+                    row.Languages = SpecialCharacterCleaner.CleanGeneric(row.Languages);
+                    row.Notes = SpecialCharacterCleaner.CleanGeneric(row.Notes);
+
                     if (string.IsNullOrWhiteSpace(row.ISBN))
                         row.ISBN = "missing";
                 }
 
-                // ✅ Filter required genres only
+               
                 var filtered = variantRows
                     .Where(r => r.Genre != null &&
                                (r.Genre.Contains("Fantasy") ||
@@ -59,12 +60,28 @@ namespace FBZapp.Services
                                 r.Genre.Contains("Science Fiction")))
                     .ToList();
 
-                // ✅ Group variants into Comic objects
                 var comics = filtered
                     .GroupBy(r => (r.Title ?? "").Trim().ToLower())
                     .Select(group =>
                     {
                         var first = group.First();
+
+                        
+                        var years = group
+                            .Select(v =>
+                            {
+                                int y;
+                                if (int.TryParse(v.RawYear, out y))
+                                    return y;
+                                else
+                                    return (int?)null;
+                            })
+                            .Where(y => y.HasValue)
+                            .Select(y => y.Value)
+                            .ToList();
+
+                        int year = years.Any() ? years.Min() : 0; 
+
 
                         var comic = new Comic
                         {
@@ -72,7 +89,8 @@ namespace FBZapp.Services
                             Author = first.Author,
                             Genre = first.Genre,
                             Publisher = first.Publisher,
-                            
+                            Languages = first.Languages,
+                            Description = string.Join(" | ", group.Select(v => v.Description) .Where(d => !string.IsNullOrWhiteSpace(d)).Distinct()),
                             Variants = new List<ComicVariant>()
                         };
 
@@ -86,6 +104,7 @@ namespace FBZapp.Services
                                 Publisher = row.Publisher,
                                 RawYear = row.RawYear,
                                 ISBN = row.ISBN
+                                
                             });
                         }
 

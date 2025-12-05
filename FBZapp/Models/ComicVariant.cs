@@ -13,14 +13,13 @@ namespace FBZapp.Models
         public string Genre { get; set; }
         public string Publisher { get; set; }
 
-        // raw year string exactly as in CSV
+       public string Notes { get; set; }
         public string RawYear { get; set; }
 
         public string ISBN { get; set; }
+        public string Languages { get; set; }
+        public string Description { get; set; }
 
-      
-
-        // Safe helper to extract a numeric year from RawYear
         public int GetNumericYear()
         {
             if (string.IsNullOrWhiteSpace(RawYear))
@@ -28,8 +27,9 @@ namespace FBZapp.Models
 
             var match = System.Text.RegularExpressions.Regex.Match(RawYear, @"\b(19|20)\d{2}\b");
             return match.Success ? int.Parse(match.Value) : 0;
+   
         }
-    }
+ }
 
 
 }

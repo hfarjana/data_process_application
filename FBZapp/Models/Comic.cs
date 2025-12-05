@@ -14,10 +14,13 @@ namespace FBZapp.Models
         public string Author { get; set; }
         public string Genre { get; set; }
         public string Publisher { get; set; }
+        public string Description { get; set; }
+        public string Languages { get; set; }   
+       
         
         public List<ComicVariant> Variants { get; set; } = new List<ComicVariant>();
 
-        // ✅ Derived year (earliest publication year)
+        
         public int Year
         {
             get
@@ -30,15 +33,15 @@ namespace FBZapp.Models
             }
         }
 
-        // ✅ Combined ISBNs
+
         public string ISBN
         {
             get
             {
-                return string.Join("; ",
-                    Variants
-                        .Select(v => string.IsNullOrWhiteSpace(v.ISBN) ? "missing" : v.ISBN)
-                        .Distinct());
+             return string.Join("; ",
+             Variants
+             .Select(v => string.IsNullOrWhiteSpace(v.ISBN) ? "missing" : v.ISBN)
+             .Distinct());
             }
         }
 
