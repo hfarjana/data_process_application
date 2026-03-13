@@ -146,11 +146,18 @@ namespace FBZapp
 
         private void btnApplyAdvanced_Click(object sender, EventArgs e)
         {
-            string author = txtAuthorFilter.Text.Trim().ToLower();
-            string publisher = txtPublisherFilter.Text.Trim().ToLower();
+            // Read raw values
+            var author = txtAuthorFilter.Text.Trim();
+            var publisher = txtPublisherFilter.Text.Trim();
+
+            // Ignore placeholder text
+            if (author == "Author") author = string.Empty;
+            if (publisher == "Publisher") publisher = string.Empty;
+
             int yearFrom = (int)numYearFrom.Value;
             int yearTo = (int)numYearTo.Value;
 
+            // Call service (it already handles lower-casing)
             var results = _searchService.AdvancedSearch(author, publisher, yearFrom, yearTo);
             dgvComics.DataSource = results;
 
@@ -159,6 +166,7 @@ namespace FBZapp
                 results.Count
             );
         }
+
 
         private void btnClear_Click(object sender, EventArgs e)
         {
@@ -303,18 +311,10 @@ namespace FBZapp
 
         private void txtAuthorFilter_Leave(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(txtAuthorFilter.Text))
             {
                 txtAuthorFilter.Text = "Author";
                 txtAuthorFilter.ForeColor = Color.Gray;
-            }
-        }
-
-        private void txtPublisherFilter_Enter(object sender, EventArgs e)
-        {
-            if (txtPublisherFilter.Text == "Publisher")
-            {
-                txtPublisherFilter.Text = "";
-                txtPublisherFilter.ForeColor = Color.Black;
             }
         }
 
@@ -324,6 +324,24 @@ namespace FBZapp
             {
                 txtPublisherFilter.Text = "Publisher";
                 txtPublisherFilter.ForeColor = Color.Gray;
+            }
+        }
+
+        private void cmbSort_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            if (allComics == null || allComics.Count == 0)
+                return;
+
+            var sorted = _searchService.ApplySorting(allComics, cmbSort.Text);
+            dgvComics.DataSource = sorted;
+        }
+
+        private void txtPublisherFilter_Enter(object sender, EventArgs e)
+        {
+            if (txtPublisherFilter.Text == "Publisher")
+            {
+                txtPublisherFilter.Text = "";
+                txtPublisherFilter.ForeColor = Color.Black;
             }
         }
     }

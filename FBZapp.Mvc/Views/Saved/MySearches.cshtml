@@ -1,0 +1,36 @@
+﻿@model List<FBZapp.Domain.Entities.SavedSearch>
+
+@{
+    ViewBag.Title = "My Saved Searches";
+}
+
+<h2>My Saved Searches</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Query</th>
+                <th>Genre</th>
+                <th>Sort</th>
+                <th>Saved Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.QueryText</td>
+                    <td>@item.Genre</td>
+                    <td>@item.SortOption</td>
+                    <td>@item.SavedDate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No saved searches yet.</p>
+}

@@ -1,0 +1,2 @@
+﻿ALTER TABLE dbo.SearchResultLogs
+ALTER COLUMN ComicTitle NVARCHAR(500) NOT NULL;

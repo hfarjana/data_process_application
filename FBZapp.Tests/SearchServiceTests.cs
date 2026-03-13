@@ -65,6 +65,9 @@ namespace FBZapp.Tests
             var result = _service.ApplySorting(_comics, "Title Z-A");
             Assert.That(result[0].Title, Is.EqualTo("Crossover"));
         }
+
+
+
     }
 }
 

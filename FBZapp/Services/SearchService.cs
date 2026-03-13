@@ -53,27 +53,26 @@ namespace FBZapp.Services
             ).ToList();
         }
 
-        
+
         // SORTING
-    
+
         public List<Comic> ApplySorting(List<Comic> comics, string sortOption)
         {
             switch (sortOption)
             {
                 case "A-Z":
                     return comics.OrderBy(c => c.Title).ToList();
-
                 case "Z-A":
                     return comics.OrderByDescending(c => c.Title).ToList();
-
                 default:
                     return comics;
             }
         }
 
-       
+
+
         // GROUPING
-       
+
         public List<IGrouping<string, Comic>> GroupComics(List<Comic> comics, string groupOption)
         {
             switch (groupOption)

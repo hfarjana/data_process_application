@@ -255,12 +255,13 @@
             // 
             this.cmbSort.FormattingEnabled = true;
             this.cmbSort.Items.AddRange(new object[] {
-            "A-z",
-            "Z-A"});
+            "\"A-Z\"",
+            "\"Z-A\""});
             this.cmbSort.Location = new System.Drawing.Point(232, 194);
             this.cmbSort.Name = "cmbSort";
             this.cmbSort.Size = new System.Drawing.Size(140, 34);
             this.cmbSort.TabIndex = 8;
+            this.cmbSort.SelectedIndexChanged += new System.EventHandler(this.cmbSort_SelectedIndexChanged_1);
             // 
             // btnClear
             // 

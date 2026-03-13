@@ -1,0 +1,12 @@
+﻿IF NOT EXISTS (
+    SELECT * FROM sys.tables WHERE name = 'Users'
+)
+BEGIN
+    CREATE TABLE dbo.Users
+    (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        Username NVARCHAR(100) NOT NULL UNIQUE,
+        PasswordHash NVARCHAR(256) NOT NULL,
+        Role NVARCHAR(50) NOT NULL
+    );
+END

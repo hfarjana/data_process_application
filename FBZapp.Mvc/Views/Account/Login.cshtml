@@ -1,0 +1,29 @@
+﻿@model FBZapp.Mvc.Models.LoginViewModel
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+
+@using (Html.BeginForm("Login", "Account", FormMethod.Post))
+{
+    <div>
+        <label>Username</label>
+        @Html.TextBoxFor(m => m.Username)
+    </div>
+
+    <div>
+        <label>Password</label>
+        @Html.PasswordFor(m => m.Password)
+    </div>
+
+    <div style="margin-top:10px;">
+        <input type="submit" value="Login" />
+    </div>
+}
+
+@if (ViewBag.Message != null)
+{
+    <p>@ViewBag.Message</p>
+}

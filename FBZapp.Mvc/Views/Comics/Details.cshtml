@@ -1,0 +1,40 @@
+﻿@model FBZapp.Domain.Entities.Comic
+
+@{
+    ViewBag.Title = "Comic Details";
+}
+
+<h2>@Model.Title</h2>
+
+<p><strong>Author:</strong> @Model.Author</p>
+<p><strong>Genre:</strong> @Model.Genre</p>
+<p><strong>Publisher:</strong> @Model.Publisher</p>
+<p><strong>Languages:</strong> @Model.Languages</p>
+<p><strong>Description:</strong> @Model.Description</p>
+
+<h3>Variants</h3>
+
+@if (Model.Variants != null && Model.Variants.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>ISBN</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var variant in Model.Variants)
+            {
+                <tr>
+                    <td>@variant.RawYear</td>
+                    <td>@variant.ISBN</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No variant information available.</p>
+}

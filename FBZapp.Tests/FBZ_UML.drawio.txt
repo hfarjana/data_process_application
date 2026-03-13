@@ -1,0 +1,105 @@
+
+
+<mxfile host="app.diagrams.net">
+  <diagram name="FBZapp UML" id="fbzapp-uml-diagram">
+    <mxGraphModel dx="1000" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- UI: FantasyBzaarForm -->
+        <mxCell id="FantasyBzaarForm" value="FantasyBzaarForm&#xa;---------------------&#xa;+txtSearch: TextBox&#xa;+btnSearch: Button&#xa;+dgvComics: DataGridView&#xa;+RunGlobalSearch()&#xa;+ApplyAdvancedSearch()&#xa;+LoadReports()" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="380" y="40" width="220" height="170" as="geometry"/>
+        </mxCell>
+
+        <!-- Interfaces -->
+        <mxCell id="ISearchService" value="&lt;&lt;interface&gt;&gt;&#xa;ISearchService&#xa;---------------------&#xa;+GlobalSearch(q): List&lt;Comic&gt;&#xa;+AdvancedSearch(a,p,y1,y2): List&lt;Comic&gt;&#xa;+ApplySorting(list, sort): List&lt;Comic&gt;&#xa;+FilterByGenre(list, g): List&lt;Comic&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="260" width="260" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="IComicRepository" value="&lt;&lt;interface&gt;&gt;&#xa;IComicRepository&#xa;---------------------&#xa;+GetAllComics(): List&lt;Comic&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="380" y="260" width="210" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="IFavouriteService" value="&lt;&lt;interface&gt;&gt;&#xa;IFavouriteService&#xa;---------------------&#xa;+AddToFavourites(c: Comic)&#xa;+RemoveFromFavourites(c: Comic)&#xa;+GetFavourites(): List&lt;Comic&gt;&#xa;+IsFavourite(c: Comic): bool" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="720" y="260" width="250" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ISearchAnalyticsService" value="&lt;&lt;interface&gt;&gt;&#xa;ISearchAnalyticsService&#xa;---------------------&#xa;+TrackSearch(q: string, count: int)&#xa;+GetTopSearches(n: int)&#xa;+GetTopResults(n: int)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="720" y="40" width="260" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- Concrete services / repos -->
+        <mxCell id="SearchService" value="SearchService&#xa;---------------------&#xa;-_repository: IComicRepository&#xa;+GlobalSearch(...)&#xa;+AdvancedSearch(...)&#xa;+ApplySorting(...)&#xa;+FilterByGenre(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="120" y="490" width="240" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ComicRepository" value="ComicRepository&#xa;---------------------&#xa;-_comics: List&lt;Comic&gt;&#xa;+GetAllComics()" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="380" y="400" width="210" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="FavouriteService" value="FavouriteService&#xa;---------------------&#xa;-_favourites: List&lt;Comic&gt;&#xa;+AddToFavourites(...)&#xa;+RemoveFromFavourites(...)&#xa;+GetFavourites()&#xa;+IsFavourite(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFE0B2;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="720" y="440" width="250" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="SearchAnalyticsService" value="SearchAnalyticsService&#xa;---------------------&#xa;-_searchCounts: Dictionary&lt;string,int&gt;&#xa;-_resultCounts: Dictionary&lt;string,int&gt;&#xa;+TrackSearch(...)&#xa;+GetTopSearches(...)&#xa;+GetTopResults(...)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#B3E5FC;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="720" y="190" width="260" height="170" as="geometry"/>
+        </mxCell>
+
+        <!-- Domain model: Comic and ComicVariant -->
+        <mxCell id="Comic" value="Comic&#xa;---------------------&#xa;+Title: string&#xa;+Author: string&#xa;+Publisher: string&#xa;+Genre: string&#xa;+Languages: string&#xa;+Year: int&#xa;+Variants: List&lt;ComicVariant&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="380" y="560" width="230" height="190" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ComicVariant" value="ComicVariant&#xa;---------------------&#xa;+RawYear: string&#xa;+ISBN: string" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="420" y="780" width="170" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- IMPLEMENTS relationships (interfaces) -->
+        <mxCell id="edge-SearchService-ISearchService" edge="1" parent="1" source="SearchService" target="ISearchService" style="endArrow=block;endFill=0;dashed=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-ComicRepo-IComicRepo" edge="1" parent="1" source="ComicRepository" target="IComicRepository" style="endArrow=block;endFill=0;dashed=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-FavService-IFavService" edge="1" parent="1" source="FavouriteService" target="IFavouriteService" style="endArrow=block;endFill=0;dashed=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-SearchAnalytics-ISearchAnalytics" edge="1" parent="1" source="SearchAnalyticsService" target="ISearchAnalyticsService" style="endArrow=block;endFill=0;dashed=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- DEPENDENCY: SearchService -> IComicRepository -->
+        <mxCell id="edge-SearchService-IComicRepo" edge="1" parent="1" source="SearchService" target="IComicRepository" style="endArrow=open;dashed=1;strokeColor=#000000;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- UI dependencies from FantasyBzaarForm -->
+        <mxCell id="edge-Form-ISearchService" edge="1" parent="1" source="FantasyBzaarForm" target="ISearchService" style="endArrow=open;dashed=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-Form-IComicRepository" edge="1" parent="1" source="FantasyBzaarForm" target="IComicRepository" style="endArrow=open;dashed=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-Form-IFavouriteService" edge="1" parent="1" source="FantasyBzaarForm" target="IFavouriteService" style="endArrow=open;dashed=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-Form-ISearchAnalyticsService" edge="1" parent="1" source="FantasyBzaarForm" target="ISearchAnalyticsService" style="endArrow=open;dashed=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- COMPOSITION: Comic -> ComicVariant (1..*) -->
+        <mxCell id="edge-Comic-ComicVariant" edge="1" parent="1" source="Comic" target="ComicVariant" style="startArrow=diamond;startFill=1;endArrow=open;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

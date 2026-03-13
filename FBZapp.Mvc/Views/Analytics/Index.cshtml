@@ -1,0 +1,94 @@
+﻿@@using System.Collections.Generic
+
+@{
+    ViewBag.Title = "Analytics Dashboard";
+    var topQueries = ViewBag.TopQueries as List<KeyValuePair<string, int>>;
+    var topReturned = ViewBag.TopReturned as List<KeyValuePair<string, int>>;
+    var moreThan100 = ViewBag.MoreThan100 as List<KeyValuePair<string, int>>;
+}
+
+<h2>Analytics Dashboard</h2>
+
+<h3>Top 10 Search Queries</h3>
+@if (topQueries != null && topQueries.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Query</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in topQueries)
+            {
+                <tr>
+                    <td>
+                        @(string.IsNullOrWhiteSpace(item.Key)
+        ? ""
+        : item.Key.Length > 120
+            ? item.Key.Substring(0, 120) + "..."
+            : item.Key)
+                    </td>
+                    <td>@item.Value</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No search queries logged yet.</p>
+}
+
+<h3>Top 10 Returned Comics</h3>
+@if (topReturned != null && topReturned.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Comic Title</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in topReturned)
+            {
+                <tr>
+                    <td>@item.Key</td>
+                    <td>@item.Value</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No returned comic analytics yet.</p>
+}
+
+<h3>Comics Returned More Than 100 Times</h3>
+@if (moreThan100 != null && moreThan100.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Comic Title</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in moreThan100)
+            {
+                <tr>
+                    <td>@item.Key</td>
+                    <td>@item.Value</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No comics have exceeded 100 returned results yet.</p>
+}

@@ -83,6 +83,10 @@
     <Compile Include="FantasyBzaar.Designer.cs">
       <DependentUpon>FantasyBzaar.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IComicRepository.cs" />
+    <Compile Include="Interfaces\IFavouriteService.cs" />
+    <Compile Include="Interfaces\ISearchAnalyticsService.cs" />
+    <Compile Include="Interfaces\ISearchService.cs" />
     <Compile Include="Models\Comic.cs" />
     <Compile Include="Models\ComicVariant.cs" />
     <Compile Include="Models\ComicVariantMap.cs" />
@@ -135,6 +139,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\FBZapp.Domain\FBZapp.Domain.csproj">
+      <Project>{d6ad54cf-b4c1-45f7-890a-c9519160a40b}</Project>
+      <Name>FBZapp.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

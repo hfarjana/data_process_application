@@ -1,4 +1,4 @@
-﻿using CsvHelper;
+﻿ using CsvHelper;
 using CsvHelper.Configuration;
 using FBZapp.Models;
 using System;
@@ -80,17 +80,18 @@ namespace FBZapp.Services
                             .Select(y => y.Value)
                             .ToList();
 
-                        int year = years.Any() ? years.Min() : 0; 
-
+                        int year = years.Any() ? years.Min() : 0;
 
                         var comic = new Comic
                         {
-                            Title = first.Title,
+                            Title = CleanPrimaryTitle(first.Title),
                             Author = first.Author,
                             Genre = first.Genre,
                             Publisher = first.Publisher,
                             Languages = first.Languages,
-                            Description = string.Join(" | ", group.Select(v => v.Description) .Where(d => !string.IsNullOrWhiteSpace(d)).Distinct()),
+                            Description = string.Join(" | ", group.Select(v => v.Description)
+                                .Where(d => !string.IsNullOrWhiteSpace(d))
+                                .Distinct()),
                             Variants = new List<ComicVariant>()
                         };
 
@@ -98,7 +99,7 @@ namespace FBZapp.Services
                         {
                             comic.Variants.Add(new ComicVariant
                             {
-                                Title = row.Title,
+                                Title = CleanPrimaryTitle(row.Title),
                                 Author = row.Author,
                                 Genre = row.Genre,
                                 Publisher = row.Publisher,
@@ -113,6 +114,7 @@ namespace FBZapp.Services
                     .ToList();
 
                 return comics;
+
             }
         }
     }

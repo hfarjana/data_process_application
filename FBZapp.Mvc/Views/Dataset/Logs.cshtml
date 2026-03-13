@@ -1,0 +1,36 @@
+﻿@model List<FBZapp.Domain.Entities.DatasetImportLog>
+
+@{
+    ViewBag.Title = "Dataset Import Logs";
+}
+
+<h2>Dataset Import Logs</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Import Date</th>
+                <th>Status</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.FileName</td>
+                    <td>@item.ImportDate</td>
+                    <td>@item.Status</td>
+                    <td>@item.Notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No dataset import logs yet.</p>
+}

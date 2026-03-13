@@ -1,0 +1,72 @@
+﻿@model FBZapp.Mvc.Models.ComicSearchViewModel
+
+@{
+    ViewBag.Title = "Advanced Search";
+}
+
+<h2>Advanced Comic Search</h2>
+
+@using (Html.BeginForm("AdvancedSearch", "Comics", FormMethod.Get))
+{
+    <div>
+        <label>Author</label>
+        @Html.TextBoxFor(m => m.Author)
+    </div>
+
+    <div>
+        <label>Publication Year</label>
+        @Html.TextBoxFor(m => m.Year)
+    </div>
+
+    <div>
+        <label>Genre</label>
+        @Html.TextBoxFor(m => m.Genre)
+    </div>
+
+    <div>
+        <label>Edition Language</label>
+        @Html.TextBoxFor(m => m.EditionLanguage)
+    </div>
+
+    <div>
+        <label>Name Type</label>
+        @Html.TextBoxFor(m => m.NameType)
+    </div>
+
+    <div style="margin-top:10px;">
+        <input type="submit" value="Advanced Search" />
+    </div>
+}
+
+<hr />
+
+@if (Model.Results != null && Model.Results.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Publisher</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var comic in Model.Results)
+            {
+                <tr>
+                    <td>@comic.Title</td>
+                    <td>@comic.Author</td>
+                    <td>@comic.Genre</td>
+                    <td>@comic.Publisher</td>
+                    <td>@Html.ActionLink("View", "Details", "Comics", new { title = comic.Title }, null)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No comics found.</p>
+}
