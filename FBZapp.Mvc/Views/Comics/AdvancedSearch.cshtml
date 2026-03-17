@@ -6,65 +6,139 @@
 
 <h2>Advanced Comic Search</h2>
 
+<p class="text-muted">
+    Search using multiple filters such as author, publication year, genre, language, and name type.
+</p>
+
 @using (Html.BeginForm("AdvancedSearch", "Comics", FormMethod.Get))
 {
-    <div>
-        <label>Author</label>
-        @Html.TextBoxFor(m => m.Author)
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label><strong>Author</strong></label>
+            @Html.TextBoxFor(m => m.Author, new { @class = "form-control", placeholder = "Enter author..." })
+        </div>
+
+        <div class="col-md-4">
+            <label><strong>Genre</strong></label>
+            @Html.TextBoxFor(m => m.Genre, new { @class = "form-control", placeholder = "Enter genre..." })
+        </div>
+
+        <div class="col-md-4">
+            <label><strong>Publication Year</strong></label>
+            @Html.TextBoxFor(m => m.Year, new { @class = "form-control", placeholder = "Enter year..." })
+        </div>
     </div>
 
-    <div>
-        <label>Publication Year</label>
-        @Html.TextBoxFor(m => m.Year)
-    </div>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label><strong>Edition Language</strong></label>
+            @Html.TextBoxFor(m => m.EditionLanguage, new { @class = "form-control", placeholder = "Enter language..." })
+        </div>
 
-    <div>
-        <label>Genre</label>
-        @Html.TextBoxFor(m => m.Genre)
-    </div>
+        <div class="col-md-4">
+            <label><strong>Name Type</strong></label>
+            @Html.TextBoxFor(m => m.NameType, new { @class = "form-control", placeholder = "Enter name type..." })
+        </div>
 
-    <div>
-        <label>Edition Language</label>
-        @Html.TextBoxFor(m => m.EditionLanguage)
+        <div class="col-md-4 d-flex align-items-end">
+            <input type="submit" value="Advanced Search" class="btn btn-dark w-100" />
+        </div>
     </div>
+}
 
-    <div>
-        <label>Name Type</label>
-        @Html.TextBoxFor(m => m.NameType)
-    </div>
+<p>
+    @Html.ActionLink("Back to Main Search", "Index", "Comics", null, new { @class = "btn btn-outline-primary" })
+</p>
 
-    <div style="margin-top:10px;">
-        <input type="submit" value="Advanced Search" />
-    </div>
+@if (Session["UserId"] != null)
+{
+    if (!string.IsNullOrWhiteSpace(Model.Author) ||
+        !string.IsNullOrWhiteSpace(Model.Genre) ||
+        Model.Year.HasValue ||
+        !string.IsNullOrWhiteSpace(Model.EditionLanguage) ||
+        !string.IsNullOrWhiteSpace(Model.NameType))
+    {
+        using (Html.BeginForm("SaveSearch", "Saved", FormMethod.Post))
+        {
+            @Html.Hidden("queryText", "Advanced Search")
+            @Html.Hidden("genre", Model.Genre)
+            @Html.Hidden("sortOption", "")
+
+            <input type="submit" value="Save This Search" class="btn btn-success mb-3" />
+        }
+    }
+}
+else
+{
+    <p class="text-muted">Login to save advanced search results.</p>
 }
 
 <hr />
 
 @if (Model.Results != null && Model.Results.Count > 0)
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Genre</th>
-                <th>Publisher</th>
-                <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var comic in Model.Results)
-            {
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
                 <tr>
-                    <td>@comic.Title</td>
-                    <td>@comic.Author</td>
-                    <td>@comic.Genre</td>
-                    <td>@comic.Publisher</td>
-                    <td>@Html.ActionLink("View", "Details", "Comics", new { title = comic.Title }, null)</td>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Genre</th>
+                    <th>Publisher</th>
+                    <th>Year</th>
+                    <th>ISBN</th>
+                    <th>Language</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var comic in Model.Results)
+                {
+                    <tr>
+                        <td>
+                            @(string.IsNullOrWhiteSpace(comic.Title)
+                                ? ""
+                                : comic.Title.Length > 80
+                                    ? comic.Title.Substring(0, 80) + "..."
+                                    : comic.Title)
+                        </td>
+                        <td>@comic.Author</td>
+                        <td>@comic.Genre</td>
+                        <td>@comic.Publisher</td>
+                        <td>@comic.Year</td>
+                        <td>@comic.ISBN</td>
+                        <td>@comic.Languages</td>
+                        <td>
+                            @Html.ActionLink("View", "Details", "Comics", new { title = comic.Title }, new { @class = "btn btn-sm btn-outline-primary me-1" })
+
+                            @if (Session["UserId"] != null)
+                            {
+                                using (Html.BeginForm("SaveComic", "Saved", FormMethod.Post, new { style = "display:inline;" }))
+                                {
+                                    @Html.Hidden("comicTitle", comic.Title)
+                                    <input type="submit" value="Save" class="btn btn-sm btn-outline-success me-1" />
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Login to save</span>
+                            }
+
+                            @if (Session["Role"] != null && Session["Role"].ToString() == "Staff")
+                            {
+                                using (Html.BeginForm("FlagComic", "Staff", FormMethod.Post, new { style = "display:inline;" }))
+                                {
+                                    @Html.Hidden("comicTitle", comic.Title)
+                                    @Html.Hidden("flagReason", "Flagged by staff user")
+                                    <input type="submit" value="Flag" class="btn btn-sm btn-outline-danger" />
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {

@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FBZapp.Domain.Entities
 {
-    using CsvHelper.Configuration.Attributes;
-
     public class Comic
     {
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public string Genre { get; set; }
-        public string Publisher { get; set; }
-        public string Description { get; set; }
-        public string Languages { get; set; }   
-       
-        
+        public string Title { get; set; } = string.Empty;
+        public string Author { get; set; } = string.Empty;
+        public string Genre { get; set; } = string.Empty;
+        public string Publisher { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Languages { get; set; } = string.Empty;
+
         public List<ComicVariant> Variants { get; set; } = new List<ComicVariant>();
 
-       
         public int Year
         {
             get
@@ -33,33 +26,17 @@ namespace FBZapp.Domain.Entities
             }
         }
 
-
         public string ISBN
         {
             get
             {
-             return string.Join("; ",
-             Variants
-             .Select(v => string.IsNullOrWhiteSpace(v.ISBN) ? "missing" : v.ISBN)
-             .Distinct());
+                return string.Join("; ",
+                    Variants
+                    .Select(v => string.IsNullOrWhiteSpace(v.ISBN) ? "missing" : v.ISBN)
+                    .Distinct());
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
-
-
 }
 
 

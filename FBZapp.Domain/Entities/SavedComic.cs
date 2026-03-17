@@ -6,7 +6,7 @@ namespace FBZapp.Domain.Entities
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public string ComicTitle { get; set; }
+        public string ComicTitle { get; set; } = string.Empty;
         public DateTime SavedDate { get; set; }
     }
 }

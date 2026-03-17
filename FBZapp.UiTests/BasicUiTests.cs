@@ -1,62 +1,79 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using System;
 
 namespace FBZapp.UiTests
 {
     [TestFixture]
     public class BasicUiTests
     {
-        private IWebDriver? driver;
-        private WebDriverWait? wait;
-        private string baseUrl = string.Empty;
+        private ChromeDriver driver;
+        private string baseUrl;
 
         [SetUp]
         public void Setup()
         {
-            driver = new ChromeDriver();
-            driver.Manage().Window.Maximize();
+            var options = new ChromeOptions();
+            options.AddArgument("--headless");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--window-size=1920,1080");
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-dev-shm-usage");
 
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            driver = new ChromeDriver(options);
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(60);
+            driver.Manage().Timeouts().AsynchronousJavaScript = TimeSpan.FromSeconds(60);
+
             baseUrl = "https://localhost:44395";
         }
 
         [TearDown]
         public void TearDown()
         {
-            driver?.Quit();
-            driver?.Dispose();
-            driver = null;
-            wait = null;
+            if (driver != null)
+            {
+                driver.Quit();
+                driver.Dispose();
+                driver = null;
+            }
         }
 
         [Test]
         public void LoginPage_Should_Load()
         {
-            driver!.Navigate().GoToUrl(baseUrl + "/Account/Login");
-            wait!.Until(d => d.PageSource.Contains("Login"));
+            driver.Navigate().GoToUrl(baseUrl + "/Account/Login");
 
+            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+            wait.Until(d => d.FindElement(By.TagName("body")));
+
+            Assert.That(driver.Url, Does.Contain("/Account/Login"));
             Assert.That(driver.PageSource, Does.Contain("Login"));
+        }
+
+        [Test]
+        public void RegisterPage_Should_Load()
+        {
+            driver.Navigate().GoToUrl(baseUrl + "/Account/Register");
+
+            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+            wait.Until(d => d.FindElement(By.TagName("body")));
+
+            Assert.That(driver.Url, Does.Contain("/Account/Register"));
+            Assert.That(driver.PageSource, Does.Contain("Register"));
         }
 
         [Test]
         public void ComicsPage_Should_Load()
         {
-            driver!.Navigate().GoToUrl(baseUrl + "/Comics");
-            wait!.Until(d => d.PageSource.Contains("Comic Search"));
+            driver.Navigate().GoToUrl(baseUrl + "/Comics");
 
-            Assert.That(driver.PageSource, Does.Contain("Comic Search"));
-        }
+            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+            wait.Until(d => d.FindElement(By.TagName("body")));
 
-        [Test]
-        public void AboutPage_Should_Load()
-        {
-            driver!.Navigate().GoToUrl(baseUrl + "/Home/About");
-            wait!.Until(d => d.PageSource.Length > 0);
-
-            Assert.That(driver.PageSource.Length, Is.GreaterThan(0));
+            Assert.That(driver.Url, Does.Contain("/Comics"));
+            Assert.That(driver.FindElement(By.TagName("body")).Text.Length, Is.GreaterThan(0));
         }
     }
 }

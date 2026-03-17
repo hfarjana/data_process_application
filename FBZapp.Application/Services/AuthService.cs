@@ -15,8 +15,11 @@ namespace FBZapp.Application.Services
         public bool Register(string username, string password, string role)
         {
             var existingUser = _userRepository.GetByUsername(username);
+
             if (existingUser != null)
+            {
                 return false;
+            }
 
             var user = new User
             {
@@ -34,10 +37,14 @@ namespace FBZapp.Application.Services
             var user = _userRepository.GetByUsername(username);
 
             if (user == null)
+            {
                 return null;
+            }
 
             if (user.PasswordHash != password)
+            {
                 return null;
+            }
 
             return user;
         }

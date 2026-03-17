@@ -5,55 +5,66 @@
 }
 
 <h2>Comic Search</h2>
-<p>Loaded comics count: @ViewBag.LoadedCount</p>
-<p>Showing first 100 results only.</p>
-<p>@Html.ActionLink("Go to Advanced Search", "AdvancedSearch", "Comics")</p>
+
+<div class="top-info">
+    <p><strong>Total loaded comics:</strong> @ViewBag.LoadedCount</p>
+    <p><strong>Showing:</strong> first 100 results only</p>
+</div>
 
 @using (Html.BeginForm("Index", "Comics", FormMethod.Get))
 {
-    <div>
-        <label>Title Search</label>
-        @Html.TextBoxFor(m => m.Query)
-    </div>
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label><strong>Title Search</strong></label>
+            @Html.TextBoxFor(m => m.Query, new { @class = "form-control", placeholder = "Enter title..." })
+        </div>
 
-    <div>
-        <label>Genre</label>
-        @Html.DropDownListFor(m => m.Genre,
-            new SelectList(new[]
-            {
-                "",
-                "Fantasy",
-                "Horror",
-                "Science Fiction"
-            }))
-    </div>
+        <div class="col-md-3">
+            <label><strong>Genre</strong></label>
+            @Html.DropDownListFor(m => m.Genre,
+                new SelectList(new[]
+                {
+                    "",
+                    "Fantasy",
+                    "Horror",
+                    "Science Fiction"
+                }),
+                new { @class = "form-control" })
+        </div>
 
-    <div>
-        <label>Sort</label>
-        @Html.DropDownListFor(m => m.SortOption,
-            new SelectList(new[]
-            {
-                "",
-                "A-Z",
-                "Z-A"
-            }))
-    </div>
+        <div class="col-md-2">
+            <label><strong>Sort</strong></label>
+            @Html.DropDownListFor(m => m.SortOption,
+                new SelectList(new[]
+                {
+                    "",
+                    "A-Z",
+                    "Z-A"
+                }),
+                new { @class = "form-control" })
+        </div>
 
-    <div>
-        <label>Group By</label>
-        @Html.DropDownListFor(m => m.GroupBy,
-            new SelectList(new[]
-            {
-                "",
-                "Author",
-                "Year"
-            }))
-    </div>
+        <div class="col-md-2">
+            <label><strong>Group By</strong></label>
+            @Html.DropDownListFor(m => m.GroupBy,
+                new SelectList(new[]
+                {
+                    "",
+                    "Author",
+                    "Year"
+                }),
+                new { @class = "form-control" })
+        </div>
 
-    <div style="margin-top:10px;">
-        <input type="submit" value="Search" />
+        <div class="col-md-2 d-flex align-items-end">
+            <input type="submit" value="Search" class="btn btn-dark w-100" />
+        </div>
     </div>
 }
+
+<p>
+    @Html.ActionLink("Go to Advanced Search", "AdvancedSearch", "Comics", null, new { @class = "btn btn-outline-primary action-btn" })
+</p>
 
 @if (Session["UserId"] != null)
 {
@@ -67,82 +78,81 @@
             @Html.Hidden("genre", Model.Genre)
             @Html.Hidden("sortOption", Model.SortOption)
 
-            <div style="margin-top:10px;">
-                <input type="submit" value="Save This Search" />
-            </div>
+            <input type="submit" value="Save This Search" class="btn btn-success action-btn" />
         }
     }
 }
 else
 {
-    <p>Login to save search results.</p>
+    <p class="text-muted">Login to save search results.</p>
 }
-
 
 <hr />
 
 @if (Model.Results != null && Model.Results.Count > 0)
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Genre</th>
-                <th>Publisher</th>
-                <th>Details</th>
-                <th>Save</th>
-                <th>Flag</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var comic in Model.Results)
-            {
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
                 <tr>
-                    <td>
-                        @(string.IsNullOrWhiteSpace(comic.Title)
-        ? ""
-        : comic.Title.Length > 100
-            ? comic.Title.Substring(0, 100) + "..."
-            : comic.Title)
-                    </td>
-                    <td>@comic.Author</td>
-                    <td>@comic.Genre</td>
-                    <td>@comic.Publisher</td>
-                    <td>@Html.ActionLink("View", "Details", "Comics", new { title = comic.Title }, null)</td>
-                    <td>
-                        @if (Session["UserId"] != null)
-                        {
-                            using (Html.BeginForm("SaveComic", "Saved", FormMethod.Post))
-                            {
-                                @Html.Hidden("comicTitle", comic.Title)
-                                <input type="submit" value="Save" />
-                            }
-                        }
-                        else
-                        {
-                            <span>Login to save</span>
-                        }
-                    </td>
-                    <td>
-                        @if (Session["Role"] != null && Session["Role"].ToString() == "Staff")
-                        {
-                            using (Html.BeginForm("FlagComic", "Staff", FormMethod.Post))
-                            {
-                                @Html.Hidden("comicTitle", comic.Title)
-                                @Html.Hidden("flagReason", "Flagged by staff user")
-                                <input type="submit" value="Flag" />
-                            }
-                        }
-                        else
-                        {
-                            <span>-</span>
-                        }
-                    </td>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Genre</th>
+                    <th>Publisher</th>
+                    <th>Year</th>
+                    <th>ISBN</th>
+                    <th>Language</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var comic in Model.Results)
+                {
+                    <tr>
+                        <td>
+                            @(string.IsNullOrWhiteSpace(comic.Title)
+                                ? ""
+                                : comic.Title.Length > 80
+                                    ? comic.Title.Substring(0, 80) + "..."
+                                    : comic.Title)
+                        </td>
+                        <td>@comic.Author</td>
+                        <td>@comic.Genre</td>
+                        <td>@comic.Publisher</td>
+                        <td>@comic.Year</td>
+                        <td>@comic.ISBN</td>
+                        <td>@comic.Languages</td>
+                        <td>
+                            @Html.ActionLink("View", "Details", "Comics", new { title = comic.Title }, new { @class = "btn btn-sm btn-outline-primary action-btn" })
+
+                            @if (Session["UserId"] != null)
+                            {
+                                using (Html.BeginForm("SaveComic", "Saved", FormMethod.Post, new { style = "display:inline;" }))
+                                {
+                                    @Html.Hidden("comicTitle", comic.Title)
+                                    <input type="submit" value="Save" class="btn btn-sm btn-outline-success action-btn" />
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Login to save</span>
+                            }
+
+                            @if (Session["Role"] != null && Session["Role"].ToString() == "Staff")
+                            {
+                                using (Html.BeginForm("FlagComic", "Staff", FormMethod.Post, new { style = "display:inline;" }))
+                                {
+                                    @Html.Hidden("comicTitle", comic.Title)
+                                    @Html.Hidden("flagReason", "Flagged by staff user")
+                                    <input type="submit" value="Flag" class="btn btn-sm btn-outline-danger action-btn" />
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
