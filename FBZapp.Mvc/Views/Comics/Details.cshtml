@@ -1,40 +1,195 @@
 ﻿@model FBZapp.Domain.Entities.Comic
 
+
+
+@if (!string.IsNullOrWhiteSpace(Model.DisplayCoverImageUrl))
+{
+    <p><strong>Cover:</strong></p>
+
+    <img src="@Model.DisplayCoverImageUrl"
+         alt="Comic cover image"
+         style="width:160px; height:auto; border:1px solid #ccc; padding:5px; margin-bottom:15px;" />
+}
+else
+{
+    <p><strong>Cover:</strong> No cover image was found from the APIs.</p>
+}
+
+<h1>Comic Details</h1>
+
+@if (TempData["ApiMessage"] != null)
+{
+    if (Model.IsApiEnriched)
+    {
+        <p style="color:green; font-weight:bold;">@TempData["ApiMessage"]</p>
+    }
+    else
+    {
+        <p style="color:red; font-weight:bold;">@TempData["ApiMessage"]</p>
+    }
+}
+
+@if (Model.IsApiEnriched)
+{
+    <h2>Online API Data</h2>
+
+    <p><strong>Title:</strong> @Model.DisplayTitle</p>
+    <p><strong>Author:</strong> @Model.DisplayAuthor</p>
+    <p><strong>Publisher:</strong> @Model.DisplayPublisher</p>
+    <p><strong>Published Date:</strong> @Model.DisplayPublishedDate</p>
+    <p><strong>ISBN:</strong> @Model.DisplayISBN</p>
+    <p><strong>Description:</strong> @Model.DisplayDescription</p>
+    <p><strong>API Source:</strong> @Model.ApiSource</p>
+}
+else
+{
+    <h2>Local Comic Data</h2>
+
+    <p><strong>Title:</strong> @Model.Title</p>
+    <p><strong>Author:</strong> @Model.Author</p>
+    <p><strong>Genre:</strong> @Model.Genre</p>
+    <p><strong>Publisher:</strong> @Model.Publisher</p>
+    <p><strong>Year:</strong> @Model.Year</p>
+    <p><strong>ISBN:</strong> @Model.ISBN</p>
+}
+
+
+
+
+
+
 @{
     ViewBag.Title = "Comic Details";
 }
 
-<h2>@Model.Title</h2>
+<h2>Comic Details</h2>
 
-<p><strong>Author:</strong> @Model.Author</p>
-<p><strong>Genre:</strong> @Model.Genre</p>
-<p><strong>Publisher:</strong> @Model.Publisher</p>
-<p><strong>Languages:</strong> @Model.Languages</p>
-<p><strong>Description:</strong> @Model.Description</p>
-
-<h3>Variants</h3>
-
-@if (Model.Variants != null && Model.Variants.Count > 0)
+@if (TempData["Message"] != null)
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Year</th>
-                <th>ISBN</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var variant in Model.Variants)
-            {
-                <tr>
-                    <td>@variant.RawYear</td>
-                    <td>@variant.ISBN</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <p style="color: green; font-weight: bold;">
+        @TempData["Message"]
+    </p>
+}
+
+@if (TempData["Error"] != null)
+{
+    <p style="color: red; font-weight: bold;">
+        @TempData["Error"]
+    </p>
+}
+
+@if (ViewBag.ApiMessage != null)
+{
+    <p style="color: green; font-weight: bold;">
+        @ViewBag.ApiMessage
+    </p>
+}
+
+<hr />
+
+<h3>Local Comic Data</h3>
+
+<div class="card" style="padding: 20px; margin-bottom: 20px;">
+    <h4>@Model.Title</h4>
+
+    <p><strong>Author:</strong> @Model.Author</p>
+    <p><strong>Genre:</strong> @Model.Genre</p>
+    <p><strong>Publisher:</strong> @Model.Publisher</p>
+    <p><strong>Year:</strong> @Model.Year</p>
+    <p><strong>ISBN:</strong> @Model.ISBN</p>
+    <p><strong>Languages:</strong> @Model.Languages</p>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <p><strong>Description:</strong> @Model.Description</p>
+    }
+    else
+    {
+        <p><strong>Description:</strong> No local description available.</p>
+    }
+</div>
+
+@if (Model.IsApiEnriched)
+{
+    <hr />
+
+    <h3>Google Books API Data</h3>
+
+    <div class="card" style="padding: 20px; margin-bottom: 20px;">
+        @if (!string.IsNullOrWhiteSpace(Model.ApiThumbnailUrl))
+        {
+            <img src="@Model.ApiThumbnailUrl"
+                 alt="Book cover image"
+                 style="width: 180px; height: auto; border: 1px solid #ccc; padding: 5px; margin-bottom: 15px;" />
+        }
+        else
+        {
+            <p>No cover image was returned from Google Books API.</p>
+        }
+
+        <p><strong>API Title:</strong> @Model.ApiTitle</p>
+        <p><strong>API Author:</strong> @Model.ApiAuthors</p>
+        <p><strong>API Publisher:</strong> @Model.ApiPublisher</p>
+        <p><strong>API Published Date:</strong> @Model.ApiPublishedDate</p>
+        <p><strong>API ISBN:</strong> @Model.ApiISBN</p>
+        <p><strong>API Source:</strong> @Model.ApiSource</p>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ApiDescription))
+        {
+            <p><strong>API Description:</strong> @Model.ApiDescription</p>
+        }
+        else
+        {
+            <p><strong>API Description:</strong> No API description available.</p>
+        }
+    </div>
 }
 else
 {
-    <p>No variant information available.</p>
+    <hr />
+
+    <h3>More Info</h3>
+
+    <p style="color: orange; font-weight: bold;">
+        No extra data was found from Google Books API for this comic.
+    </p>
 }
+
+<hr />
+
+<h3>Email Notification</h3>
+<p>Send a confirmation email for this comic record.</p>
+
+@using (Html.BeginForm("SendSavedEmail", "Comics", FormMethod.Post))
+{
+    <input type="hidden" name="comicTitle" value="@Model.Title" />
+
+    <div class="form-group">
+        <label><strong>Email address</strong></label>
+        <input type="email"
+               name="userEmail"
+               class="form-control"
+               placeholder="example@email.com"
+               required />
+    </div>
+
+    <br />
+
+    <button type="submit" class="btn btn-success">
+        Send confirmation email
+    </button>
+}
+
+<hr />
+
+<p>
+    @Html.ActionLink("Back to Comic Search", "Index", "Comics", null, new { @class = "btn btn-secondary" })
+
+    @Html.ActionLink(
+        "Refresh",
+        "ApiDetails",
+        "Comics",
+        new { title = Model.Title },
+        new { @class = "btn btn-info" }
+    )
+</p>

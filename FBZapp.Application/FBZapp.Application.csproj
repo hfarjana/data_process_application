@@ -43,8 +43,11 @@
   <ItemGroup>
     <Compile Include="Interfaces\IAnalyticsRepository.cs" />
     <Compile Include="Interfaces\IAuthService.cs" />
+    <Compile Include="Interfaces\IBookApiService.cs" />
+    <Compile Include="Interfaces\IComicApiIntegrationService.cs" />
     <Compile Include="Interfaces\IComicRepository.cs" />
     <Compile Include="Interfaces\IDataSetImportLogRepository.cs" />
+    <Compile Include="Interfaces\IEmailService.cs" />
     <Compile Include="Interfaces\IFavouriteService.cs" />
     <Compile Include="Interfaces\IFlagRepository.cs" />
     <Compile Include="Interfaces\ISavedSearchRepository.cs" />
@@ -53,6 +56,7 @@
     <Compile Include="Interfaces\IUserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AuthService.cs" />
+    <Compile Include="Services\comicApiIntegrationService.cs" />
     <Compile Include="Services\FavouriteService.cs" />
     <Compile Include="Services\SearchAnalyticsService.cs" />
     <Compile Include="Services\SearchService.cs" />

@@ -1,0 +1,7 @@
+.elementor-widget-image img {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+
+SBE PXF 7R4 Sharecode

@@ -66,6 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\BookApiResult.cs" />
     <Compile Include="Entities\Comic.cs" />
     <Compile Include="Entities\ComicVariant.cs" />
     <Compile Include="Entities\DatasetImportLog.cs" />

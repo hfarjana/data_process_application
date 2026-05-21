@@ -1,0 +1,104 @@
+1. Introduction
+
+Covers: General assignment introduction
+
+Write about what the report will cover.
+
+2. API and SDK Relationship
+
+Covers: P1
+
+2.1 What is an API?
+
+2.3 Relationship Between API and SDK
+
+2.4 API vs SDK Table
+
+3. Review of APIs for Different Platforms
+
+Covers: P2
+
+4. Assessment of Suitable APIs for FBZapp
+
+Covers: M1
+Here you assess APIs, not just describe them.
+
+5. Evaluation of Selected APIs Including Security Issues
+
+5.2 Open Library Covers API Evaluation
+
+5.3 Security Issues
+
+6. Existing Application Investigation
+
+Covers: P3
+
+7. Designed API Solution
+
+Covers: M2
+
+7.1 Aim of the Design
+
+7.2 APIs Used in the Design
+
+7.3 Modular Layered Design
+
+7.4 Modular Architecture Diagram
+
+7.5 API Data Flow
+
+8. Critical Review of Designed Solution
+
+Covers: D2
+
+9. Implementation
+
+Covers: P4
+
+9.1 Development Environment
+
+
+9.2 Main Classes Implemented
+
+9.3 Implementation Explanation
+
+9.4 Pseudocode
+
+
+9.5 Screenshots
+
+Add screenshots of:
+
+# Search page before API search.
+# Searching Watchmen or Harry Potter.
+# Details page showing online metadata.
+# Cover image displayed.
+# Code screenshot of GoogleBookApiClient.cs.
+# Code screenshot of controller mapping.
+
+10. Refinement Using Multiple APIs
+
+Covers: M3
+
+11. Testing
+
+Covers: P5
+
+11.1 Black-Box Testing Plan and Results
+
+11.2 White-Box Testing Plan and Results
+
+11.3 Security Testing
+
+12. Refinement Based on Testing
+
+13. API Evaluation and Data Security Report
+
+13.1 API Evaluation Based on Testing
+
+13.2 Data Security Report
+
+14. Conclusion
+
+Covers: Final summar
+

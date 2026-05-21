@@ -1,0 +1,378 @@
+1.0 Introduction
+
+
+Brief explanation of the scenario
+
+Purpose of the report
+
+Overview of chosen APIs (Google Books API + Open Library + Email API)
+
+How the report is structured
+
+
+
+2.0 LO1 — Examine the Role of APIs (P1, P2, M1, D1)
+
+2.1 P1 — Relationship Between API and SDK
+Explain:
+
+What an API is
+
+What an SDK is
+
+Differences
+
+How they work together
+
+Example from your project (Google Books API = API, .NET libraries = SDK)
+
+Include a short reference from the assignment brief:
+
+“Your task is to explore and evaluate different types of APIs…”
+
+
+
+2.2 P2 — Review a Range of APIs for Different Platforms
+Review at least 5 API types:
+
+REST
+
+SOAP
+
+GraphQL
+
+Webhooks
+
+gRPC
+
+Plus platform‑specific APIs (Google Books, Open Library, SendGrid, Stripe, Twilio)
+
+For each:
+
+What it is
+
+Strengths
+
+Weaknesses
+
+Example use cases
+
+
+
+2.3 M1 — Assess APIs Suitable for the Scenario
+Apply the scenario:
+
+The company wants APIs for:
+
+Payment processors
+
+Communication tools
+
+Data management systems
+
+Assess each API type against:
+
+Functionality
+
+Compatibility
+
+Ease of integration
+
+Documentation quality
+
+Scalability
+
+Security
+
+Cost
+
+
+
+2.4 D1 — Evaluate a Selected API Including Security Issues
+Evaluate Google Books API in depth:
+
+Include:
+
+Why it fits your application
+
+How it retrieves comic metadata
+
+Authentication method (API key)
+
+Data flow
+
+Security risks:
+
+API key leakage
+
+MITM attacks
+
+Rate‑limit abuse
+
+Input manipulation
+
+JSON injection
+
+Mitigation strategies:
+
+HTTPS
+
+Key rotation
+
+Environment variables
+
+Input sanitisation
+
+Logging & monitoring
+
+This section must be analytical and security‑focused.
+
+
+
+3.0 LO2 — Design a Solution (P3, M2, D2)
+
+3.1 P3 — Investigate an Existing Application
+Describe your existing application (FBZapp / Comic Encyclopedia):
+
+Include:
+
+Current features
+
+Limitations
+
+Why it needs API integration
+
+What the new API will add
+
+
+
+3.2 M2 — Design a Solution Using an API
+Include:
+
+3.2.1 System Architecture Diagram
+Layers:
+
+MVC
+
+Application
+
+Infrastructure
+
+Domain
+
+
+
+3.2.2 Data Flow Diagram
+User → Controller → API Service → Google Books → Mapping → View
+
+3.2.3 Class Diagram
+Include:
+
+ComicsController
+
+IBookApiService
+
+GoogleBookApiClient
+
+BookApiResult
+
+Comic
+
+
+
+3.2.4 Sequence Diagram
+User searches → Controller → API Client → Google Books → Open Library fallback → Mapping → View
+
+
+3.2.5 API Endpoints
+Google Books search endpoint
+
+Open Library cover endpoint
+
+Email API endpoint
+
+
+
+3.2.6 Error Handling Strategy
+Missing title
+
+No results
+
+API failure
+
+Invalid JSON
+
+Missing cover image
+
+
+
+3.3 D2 — Critical Review of the Designed Solution
+Critically evaluate your design:
+
+Discuss:
+
+Strengths
+
+Weaknesses
+
+Alternative APIs you could have used
+
+Scalability
+
+Maintainability
+
+Security considerations
+
+Future improvements (e.g., caching, more APIs, OAuth2, database storage)
+
+This must show critical thinking.
+
+PHASE 2 — IMPLEMENTATION (LO3 + LO4)
+This section covers: P4, M3, D3, P5, M4
+
+
+
+4.0 LO3 — Implementation (P4, M3, D3)
+
+4.1 P4 — Build on Existing Framework
+Show:
+
+How you added the API service
+
+How you registered it in Program.cs
+
+How the controller calls the service
+
+How the view displays results
+
+Include code snippets.
+
+
+
+4.2 M3 — Refine the Application Using Multiple APIs
+You used:
+
+Google Books API (primary)
+
+Open Library Covers API (fallback)
+
+Email API (SendGrid / SMTP / MailKit)
+
+Explain how each improves:
+
+User experience
+
+Reliability
+
+Functionality
+
+
+
+4.3 D3 — Evaluate APIs + Data Security Report
+Include:
+
+
+4.3.1 API Performance Evaluation
+Response times
+
+Reliability
+
+Error rates
+
+
+
+4.3.2 Security Evaluation
+API key storage
+
+HTTPS
+
+Email security
+
+GDPR considerations
+
+Logging
+
+Access control
+
+
+4.3.3 Data Security Report
+How user data is protected
+
+How email addresses are handled
+
+How API keys are secured
+
+Risks + mitigation
+
+
+5.0 LO4 — Testing (P5, M4)
+5.1 P5 — White Box Testing
+Include:
+
+Unit tests
+
+Method‑level tests
+
+Input validation tests
+
+Mapping tests
+
+API client logic tests
+
+
+5.2 P5 — Black Box Testing
+Include:
+
+Functional tests
+
+Search tests
+
+Error handling tests
+
+API failure tests
+
+Security tests (invalid input, rate limit, missing key)
+
+
+
+5.3 M4 — Refinement Based on Testing
+Show:
+
+What failed
+
+What you fixed
+
+Before/after screenshots
+
+Updated code
+
+Improved error handling
+
+
+6.0 Conclusion
+Summarise:
+
+What you learned
+
+How the APIs improved the application
+
+Security improvements
+
+Future enhancements
+
+
+
+7.0 Harvard References
+Include:
+
+Google Books API documentation
+
+Open Library documentation
+
+Email API documentation
+
+Academic sources
+
+Books
+
+Websites

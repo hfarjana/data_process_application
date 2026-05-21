@@ -1,0 +1,40 @@
+Presentation Layer
+                  
+   FBZapp.Mvc                                                                    
+
+ComicsController.cs                           
+Index.cshtml                                  
+Details.cshtml                                
+Purpose: Hand
+
+ Application Layer  
+                
+ FBZapp.Application                  
+                                                 
+ IBookApiService.cs                            
+                                                  
+ Purpose: Defines what the API service must do les user input and displays data 
+
+Infrastructure Layer 
+               
+FBZapp.Infrastructure               
+                                                  
+GoogleBookApiClient.cs                        
+                                                  
+Purpose: Calls external APIs using HttpClient
+ 
+External API Layer                
+                                                 
+Google Books API                               
+
+Open Library Covers API                                                                        
+Purpose: Provides online metadata and covers 
+
+Domain Layer
+                  
+FBZapp.Domain                   
+                                                
+Comic.cs                                      
+ComicVariant.cs                               
+BookApiResult.cs                              
+Purpose: Stores local and API-enriched data

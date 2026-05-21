@@ -7,6 +7,43 @@
 <h2>Comic Search</h2>
 
 <div class="top-info">
+    @if (TempData["Message"] != null)
+    {
+        <p style="color: green; font-weight: bold;">
+            @TempData["Message"]
+        </p>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <p style="color: red; font-weight: bold;">
+            @TempData["Error"]
+        </p>
+    }
+
+    <hr />
+
+    <h3>Find online comic details</h3>
+
+    @using (Html.BeginForm("ApiDetails", "Comics", FormMethod.Get))
+    {
+        <label>Find online comic details</label>
+
+        <input type="text"
+               name="title"
+               class="form-control"
+               placeholder="Example: Batman" />
+
+        <br />
+
+        <button type="submit" class="btn btn-primary">
+            Get online book details
+        </button>
+     }
+
+
+
+    <hr />
     <p><strong>Total loaded comics:</strong> @ViewBag.LoadedCount</p>
     <p><strong>Showing:</strong> first 100 results only</p>
 </div>
@@ -137,6 +174,13 @@ else
                             {
                                 <span class="text-muted">Login to save</span>
                             }
+                            @Html.ActionLink(
+                             "Check more details",
+                              "ApiDetails",
+                              "Comics",
+                             new { title = comic.Title },
+                              new { @class = "btn btn-info btn-sm" }
+                              )
 
                             @if (Session["Role"] != null && Session["Role"].ToString() == "Staff")
                             {
