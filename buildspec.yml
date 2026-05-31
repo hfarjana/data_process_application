@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Restoring NuGet packages
+      - nuget restore FBZapp.sln
+
+  build:
+    commands:
+      - echo Building solution
+      - msbuild FBZapp.sln /p:Configuration=Release
+      - echo Running NUnit tests
+      - dotnet test ThinkTankRepository.Tests/ThinkTankRepository.Tests.csproj --configuration Release
+
+artifacts:
+  files:
+    - '**/*'
