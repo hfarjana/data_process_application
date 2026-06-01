@@ -22,20 +22,32 @@ namespace FBZapp.Infrastructure.Repositories
 
         public void LogSearch(int? userId, string queryText)
         {
-            using (var conn = new SqlConnection(_connectionString))
+            if (string.IsNullOrWhiteSpace(_connectionString))
+                return;
+
+            try
             {
-                conn.Open();
-
-                using (var cmd = new SqlCommand(
-                    @"INSERT INTO SearchLogs (UserId, QueryText, SearchDate)
-                      VALUES (@UserId, @QueryText, @SearchDate)", conn))
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    cmd.Parameters.AddWithValue("@UserId", (object)userId ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@QueryText", (object)queryText ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@SearchDate", DateTime.Now);
+                    connection.Open();
 
-                    cmd.ExecuteNonQuery();
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                    INSERT INTO SearchLogs (UserId, QueryText, SearchDate)
+                    VALUES (@UserId, @QueryText, @SearchDate)";
+
+                        command.Parameters.AddWithValue("@UserId", (object)userId ?? DBNull.Value);
+                        command.Parameters.AddWithValue("@QueryText", queryText ?? "");
+                        command.Parameters.AddWithValue("@SearchDate", DateTime.Now);
+
+                        command.ExecuteNonQuery();
+                    }
                 }
+            }
+            catch
+            {
+                // Analytics logging is optional, so the app should not fail if SQL Server is unavailable.
             }
         }
 
