@@ -8,20 +8,19 @@ phases:
 
   build:
     commands:
-      - echo Cleaning folders
-      - if (Test-Path "$env:CODEBUILD_SRC_DIR\published_site") { Remove-Item -Recurse -Force "$env:CODEBUILD_SRC_DIR\published_site" }
+      - echo Cleaning Elastic Beanstalk bundle folder
       - if (Test-Path "$env:CODEBUILD_SRC_DIR\beanstalk_bundle") { Remove-Item -Recurse -Force "$env:CODEBUILD_SRC_DIR\beanstalk_bundle" }
-      - New-Item -ItemType Directory -Force -Path "$env:CODEBUILD_SRC_DIR\published_site"
       - New-Item -ItemType Directory -Force -Path "$env:CODEBUILD_SRC_DIR\beanstalk_bundle"
 
-      - echo Publishing MVC application
-      - msbuild .\FBZapp.Mvc\FBZapp.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="$env:CODEBUILD_SRC_DIR\published_site\"
+      - echo Creating MSDeploy package for MVC application
+      - msbuild .\FBZapp.Mvc\FBZapp.Mvc.csproj /t:Package /p:Configuration=Release
 
-      - echo Creating site zip
-      - Compress-Archive -Path "$env:CODEBUILD_SRC_DIR\published_site\*" -DestinationPath "$env:CODEBUILD_SRC_DIR\beanstalk_bundle\site.zip" -Force
+      - echo Copying MSDeploy package into Beanstalk bundle
+      - $package = Get-ChildItem ".\FBZapp.Mvc\obj\Release\Package" -Filter "*.zip" | Select-Object -First 1
+      - Copy-Item $package.FullName "$env:CODEBUILD_SRC_DIR\beanstalk_bundle\FBZapp.Mvc.zip" -Force
 
-      - echo Creating Elastic Beanstalk deployment manifest
-      - '@{ manifestVersion = 1; deployments = @{ msDeploy = @(@{ name = "ThinkTankRepository"; parameters = @{ archive = "site.zip"; iisPath = "/" } }) } } | ConvertTo-Json -Depth 10 | Out-File "$env:CODEBUILD_SRC_DIR\beanstalk_bundle\aws-windows-deployment-manifest.json" -Encoding ascii'
+      - echo Creating correct Elastic Beanstalk Windows deployment manifest
+      - '@{ manifestVersion = 1; deployments = @{ msDeploy = @(@{ name = "FBZapp.Mvc"; parameters = @{ appBundle = "FBZapp.Mvc.zip"; iisPath = "/" } }) } } | ConvertTo-Json -Depth 10 | Out-File "$env:CODEBUILD_SRC_DIR\beanstalk_bundle\aws-windows-deployment-manifest.json" -Encoding ascii'
 
       - echo Listing final Elastic Beanstalk bundle
       - Get-ChildItem "$env:CODEBUILD_SRC_DIR\beanstalk_bundle" -Recurse
