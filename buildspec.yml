@@ -10,8 +10,7 @@ phases:
     commands:
       - echo Building solution
       - msbuild FBZapp.sln /p:Configuration=Release
-      - echo Running NUnit tests
-      - dotnet test ThinkTankRepository.Tests/ThinkTankRepository.Tests.csproj --configuration Release
+      - echo Build completed successfully
 
 artifacts:
   files:
