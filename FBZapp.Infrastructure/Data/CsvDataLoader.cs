@@ -1,4 +1,5 @@
-﻿using CsvHelper;
+﻿using System;
+using CsvHelper;
 using CsvHelper.Configuration;
 using FBZapp.Domain.Entities;
 using System.Collections.Generic;
@@ -23,7 +24,9 @@ namespace FBZapp.Infrastructure.Data
         private string CleanPrimaryTitle(string rawTitle)
         {
             if (string.IsNullOrWhiteSpace(rawTitle))
+            {
                 return "";
+            }
 
             var cleaned = rawTitle.Trim();
 
@@ -45,7 +48,9 @@ namespace FBZapp.Infrastructure.Data
         public List<Comic> LoadComics()
         {
             if (!File.Exists(_filePath))
+            {
                 throw new FileNotFoundException("CSV file not found.", _filePath);
+            }
 
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
@@ -59,6 +64,7 @@ namespace FBZapp.Infrastructure.Data
             using (var csv = new CsvReader(reader, config))
             {
                 csv.Context.RegisterClassMap<ComicVariantMap>();
+
                 var variantRows = csv.GetRecords<ComicVariant>().ToList();
 
                 foreach (var row in variantRows)
@@ -71,12 +77,12 @@ namespace FBZapp.Infrastructure.Data
                     row.Notes = SpecialCharacterCleaner.CleanGeneric(row.Notes);
 
                     if (string.IsNullOrWhiteSpace(row.ISBN))
+                    {
                         row.ISBN = "missing";
+                    }
                 }
 
-                var filtered = variantRows.ToList();
-
-                var comics = filtered
+                var comics = variantRows
                     .GroupBy(r => string.IsNullOrWhiteSpace(r.Title)
                         ? ""
                         : CleanPrimaryTitle(r.Title).ToLower())
@@ -123,6 +129,5 @@ namespace FBZapp.Infrastructure.Data
         }
     }
 }
-
 
 
