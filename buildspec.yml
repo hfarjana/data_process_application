@@ -8,13 +8,25 @@ phases:
 
   build:
     commands:
-      - echo Building and packaging MVC web application
-      - msbuild .\FBZapp.Mvc\FBZapp.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=false
-      - echo Listing packaged MVC files
-      - Get-ChildItem .\FBZapp.Mvc\obj\Release\Package\PackageTmp -Recurse
-      - echo Build and package completed successfully
+      - echo Cleaning folders
+      - if (Test-Path "$env:CODEBUILD_SRC_DIR\published_site") { Remove-Item -Recurse -Force "$env:CODEBUILD_SRC_DIR\published_site" }
+      - if (Test-Path "$env:CODEBUILD_SRC_DIR\beanstalk_bundle") { Remove-Item -Recurse -Force "$env:CODEBUILD_SRC_DIR\beanstalk_bundle" }
+      - New-Item -ItemType Directory -Force -Path "$env:CODEBUILD_SRC_DIR\published_site"
+      - New-Item -ItemType Directory -Force -Path "$env:CODEBUILD_SRC_DIR\beanstalk_bundle"
+
+      - echo Publishing MVC application
+      - msbuild .\FBZapp.Mvc\FBZapp.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="$env:CODEBUILD_SRC_DIR\published_site\"
+
+      - echo Creating site zip
+      - Compress-Archive -Path "$env:CODEBUILD_SRC_DIR\published_site\*" -DestinationPath "$env:CODEBUILD_SRC_DIR\beanstalk_bundle\site.zip" -Force
+
+      - echo Creating Elastic Beanstalk deployment manifest
+      - '@{ manifestVersion = 1; deployments = @{ msDeploy = @(@{ name = "ThinkTankRepository"; parameters = @{ archive = "site.zip"; iisPath = "/" } }) } } | ConvertTo-Json -Depth 10 | Out-File "$env:CODEBUILD_SRC_DIR\beanstalk_bundle\aws-windows-deployment-manifest.json" -Encoding ascii'
+
+      - echo Listing final Elastic Beanstalk bundle
+      - Get-ChildItem "$env:CODEBUILD_SRC_DIR\beanstalk_bundle" -Recurse
 
 artifacts:
-  base-directory: FBZapp.Mvc/obj/Release/Package/PackageTmp
+  base-directory: beanstalk_bundle
   files:
     - '**/*'
