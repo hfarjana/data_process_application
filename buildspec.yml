@@ -8,10 +8,14 @@ phases:
 
   build:
     commands:
-      - echo Building MVC web application
-      - msbuild FBZapp.Mvc/FBZapp.Mvc.csproj /p:Configuration=Release
-      - echo Build completed successfully
+      - echo Cleaning publish folder
+      - if exist published_site rmdir /s /q published_site
+      - mkdir published_site
+      - echo Publishing MVC web application
+      - msbuild FBZapp.Mvc\FBZapp.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl=..\published_site
+      - echo Publish completed successfully
 
 artifacts:
+  base-directory: published_site
   files:
     - '**/*'
