@@ -9,13 +9,14 @@ phases:
   build:
     commands:
       - echo Cleaning publish folder
-      - if (Test-Path published_site) { Remove-Item -Recurse -Force published_site }
-      - New-Item -ItemType Directory -Force -Path published_site
+      - if (Test-Path "$env:CODEBUILD_SRC_DIR\published_site") { Remove-Item -Recurse -Force "$env:CODEBUILD_SRC_DIR\published_site" }
+      - New-Item -ItemType Directory -Force -Path "$env:CODEBUILD_SRC_DIR\published_site"
       - echo Publishing MVC web application
-      - msbuild .\FBZapp.Mvc\FBZapp.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:PublishUrl=..\published_site\
-      - echo Publish completed successfully
+      - msbuild .\FBZapp.Mvc\FBZapp.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="$env:CODEBUILD_SRC_DIR\published_site"
+      - echo Listing published files
+      - Get-ChildItem "$env:CODEBUILD_SRC_DIR\published_site" -Recurse
 
 artifacts:
-  base-directory: published_site
   files:
     - '**/*'
+  base-directory: published_site
