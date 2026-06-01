@@ -4,15 +4,15 @@ phases:
   install:
     commands:
       - echo Restoring NuGet packages
-      - nuget restore FBZapp.sln
+      - nuget restore .\FBZapp.sln
 
   build:
     commands:
       - echo Cleaning publish folder
-      - if exist published_site rmdir /s /q published_site
-      - mkdir published_site
+      - if (Test-Path published_site) { Remove-Item -Recurse -Force published_site }
+      - New-Item -ItemType Directory -Force -Path published_site
       - echo Publishing MVC web application
-      - msbuild FBZapp.Mvc\FBZapp.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl=..\published_site
+      - msbuild .\FBZapp.Mvc\FBZapp.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:PublishUrl=..\published_site\
       - echo Publish completed successfully
 
 artifacts:
