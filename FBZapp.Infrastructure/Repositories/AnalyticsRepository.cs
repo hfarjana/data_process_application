@@ -5,7 +5,6 @@ using System.Data;
 using System.Data.SqlClient;
 using FBZapp.Application.Interfaces;
 
-
 namespace FBZapp.Infrastructure.Repositories
 {
     public class AnalyticsRepository : IAnalyticsRepository
@@ -15,9 +14,17 @@ namespace FBZapp.Infrastructure.Repositories
 
         public AnalyticsRepository()
         {
-            _connectionString = ConfigurationManager
-                .ConnectionStrings["FBZappDB"]
-                .ConnectionString;
+            try
+            {
+                var connectionStringSetting = ConfigurationManager.ConnectionStrings["FBZappDB"];
+                _connectionString = connectionStringSetting == null
+                    ? string.Empty
+                    : connectionStringSetting.ConnectionString;
+            }
+            catch
+            {
+                _connectionString = string.Empty;
+            }
         }
 
         public void LogSearch(int? userId, string queryText)
@@ -34,11 +41,11 @@ namespace FBZapp.Infrastructure.Repositories
                     using (var command = connection.CreateCommand())
                     {
                         command.CommandText = @"
-                    INSERT INTO SearchLogs (UserId, QueryText, SearchDate)
-                    VALUES (@UserId, @QueryText, @SearchDate)";
+                            INSERT INTO SearchLogs (UserId, QueryText, SearchDate)
+                            VALUES (@UserId, @QueryText, @SearchDate)";
 
                         command.Parameters.AddWithValue("@UserId", (object)userId ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@QueryText", queryText ?? "");
+                        command.Parameters.AddWithValue("@QueryText", queryText ?? string.Empty);
                         command.Parameters.AddWithValue("@SearchDate", DateTime.Now);
 
                         command.ExecuteNonQuery();
@@ -47,42 +54,54 @@ namespace FBZapp.Infrastructure.Repositories
             }
             catch
             {
-                // Analytics logging is optional, so the app should not fail if SQL Server is unavailable.
+                // Analytics logging is optional.
+                // If SQL Server is unavailable on AWS, the main Comics page should still load.
             }
         }
 
         public void LogSearchResults(string queryText, List<string> comicTitles)
         {
+            if (string.IsNullOrWhiteSpace(_connectionString))
+                return;
+
             if (comicTitles == null || comicTitles.Count == 0)
                 return;
 
-            using (var conn = new SqlConnection(_connectionString))
+            try
             {
-                conn.Open();
-
-                using (var cmd = new SqlCommand(
-                    @"INSERT INTO SearchResultLogs (QueryText, ComicTitle, SearchDate)
-                      VALUES (@QueryText, @ComicTitle, @SearchDate)", conn))
+                using (var conn = new SqlConnection(_connectionString))
                 {
-                    cmd.Parameters.Add("@QueryText", SqlDbType.NVarChar, 255).Value =
-                        (object)queryText ?? DBNull.Value;
+                    conn.Open();
 
-                    cmd.Parameters.Add("@ComicTitle", SqlDbType.NVarChar, ComicTitleMaxLength);
-                    cmd.Parameters.Add("@SearchDate", SqlDbType.DateTime);
-
-                    foreach (var rawTitle in comicTitles)
+                    using (var cmd = new SqlCommand(
+                        @"INSERT INTO SearchResultLogs (QueryText, ComicTitle, SearchDate)
+                          VALUES (@QueryText, @ComicTitle, @SearchDate)", conn))
                     {
-                        var safeTitle = NormalizeComicTitle(rawTitle);
+                        cmd.Parameters.Add("@QueryText", SqlDbType.NVarChar, 255).Value =
+                            string.IsNullOrWhiteSpace(queryText) ? (object)DBNull.Value : queryText;
 
-                        if (string.IsNullOrWhiteSpace(safeTitle))
-                            continue;
+                        cmd.Parameters.Add("@ComicTitle", SqlDbType.NVarChar, ComicTitleMaxLength);
+                        cmd.Parameters.Add("@SearchDate", SqlDbType.DateTime);
 
-                        cmd.Parameters["@ComicTitle"].Value = safeTitle;
-                        cmd.Parameters["@SearchDate"].Value = DateTime.Now;
+                        foreach (var rawTitle in comicTitles)
+                        {
+                            var safeTitle = NormalizeComicTitle(rawTitle);
 
-                        cmd.ExecuteNonQuery();
+                            if (string.IsNullOrWhiteSpace(safeTitle))
+                                continue;
+
+                            cmd.Parameters["@ComicTitle"].Value = safeTitle;
+                            cmd.Parameters["@SearchDate"].Value = DateTime.Now;
+
+                            cmd.ExecuteNonQuery();
+                        }
                     }
                 }
+            }
+            catch
+            {
+                // Search result analytics are optional.
+                // Do not break the Comics page if SQL Server is unavailable.
             }
         }
 
@@ -90,29 +109,39 @@ namespace FBZapp.Infrastructure.Repositories
         {
             var results = new List<KeyValuePair<string, int>>();
 
-            using (var conn = new SqlConnection(_connectionString))
+            if (string.IsNullOrWhiteSpace(_connectionString))
+                return results;
+
+            try
             {
-                conn.Open();
-
-                using (var cmd = new SqlCommand(
-                    @"SELECT TOP 10 QueryText, COUNT(*) AS Total
-                      FROM SearchLogs
-                      WHERE QueryText IS NOT NULL AND QueryText <> ''
-                      GROUP BY QueryText
-                      ORDER BY COUNT(*) DESC", conn))
+                using (var conn = new SqlConnection(_connectionString))
                 {
-                    cmd.CommandTimeout = 30;
+                    conn.Open();
 
-                    using (var reader = cmd.ExecuteReader())
+                    using (var cmd = new SqlCommand(
+                        @"SELECT TOP 10 QueryText, COUNT(*) AS Total
+                          FROM SearchLogs
+                          WHERE QueryText IS NOT NULL AND QueryText <> ''
+                          GROUP BY QueryText
+                          ORDER BY COUNT(*) DESC", conn))
                     {
-                        while (reader.Read())
+                        cmd.CommandTimeout = 30;
+
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            results.Add(new KeyValuePair<string, int>(
-                                reader["QueryText"].ToString(),
-                                Convert.ToInt32(reader["Total"])));
+                            while (reader.Read())
+                            {
+                                results.Add(new KeyValuePair<string, int>(
+                                    reader["QueryText"].ToString(),
+                                    Convert.ToInt32(reader["Total"])));
+                            }
                         }
                     }
                 }
+            }
+            catch
+            {
+                return results;
             }
 
             return results;
@@ -122,21 +151,24 @@ namespace FBZapp.Infrastructure.Repositories
         {
             var results = new List<KeyValuePair<string, int>>();
 
-            using (var conn = new SqlConnection(_connectionString))
+            if (string.IsNullOrWhiteSpace(_connectionString))
+                return results;
+
+            try
             {
-                conn.Open();
-
-                using (var cmd = new SqlCommand(
-                    @"SELECT TOP 10 ComicTitle, COUNT(*) AS Total
-                      FROM SearchResultLogs
-                      WHERE ComicTitle IS NOT NULL AND ComicTitle <> ''
-                      GROUP BY ComicTitle
-                      ORDER BY COUNT(*) DESC", conn))
+                using (var conn = new SqlConnection(_connectionString))
                 {
-                    cmd.CommandTimeout = 30;
+                    conn.Open();
 
-                    try
+                    using (var cmd = new SqlCommand(
+                        @"SELECT TOP 10 ComicTitle, COUNT(*) AS Total
+                          FROM SearchResultLogs
+                          WHERE ComicTitle IS NOT NULL AND ComicTitle <> ''
+                          GROUP BY ComicTitle
+                          ORDER BY COUNT(*) DESC", conn))
                     {
+                        cmd.CommandTimeout = 30;
+
                         using (var reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -147,11 +179,11 @@ namespace FBZapp.Infrastructure.Repositories
                             }
                         }
                     }
-                    catch (SqlException)
-                    {
-                        return results;
-                    }
                 }
+            }
+            catch
+            {
+                return results;
             }
 
             return results;
@@ -161,30 +193,40 @@ namespace FBZapp.Infrastructure.Repositories
         {
             var results = new List<KeyValuePair<string, int>>();
 
-            using (var conn = new SqlConnection(_connectionString))
+            if (string.IsNullOrWhiteSpace(_connectionString))
+                return results;
+
+            try
             {
-                conn.Open();
-
-                using (var cmd = new SqlCommand(
-                    @"SELECT ComicTitle, COUNT(*) AS Total
-                      FROM SearchResultLogs
-                      WHERE ComicTitle IS NOT NULL AND ComicTitle <> ''
-                      GROUP BY ComicTitle
-                      HAVING COUNT(*) > 100
-                      ORDER BY COUNT(*) DESC", conn))
+                using (var conn = new SqlConnection(_connectionString))
                 {
-                    cmd.CommandTimeout = 30;
+                    conn.Open();
 
-                    using (var reader = cmd.ExecuteReader())
+                    using (var cmd = new SqlCommand(
+                        @"SELECT ComicTitle, COUNT(*) AS Total
+                          FROM SearchResultLogs
+                          WHERE ComicTitle IS NOT NULL AND ComicTitle <> ''
+                          GROUP BY ComicTitle
+                          HAVING COUNT(*) > 100
+                          ORDER BY COUNT(*) DESC", conn))
                     {
-                        while (reader.Read())
+                        cmd.CommandTimeout = 30;
+
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            results.Add(new KeyValuePair<string, int>(
-                                reader["ComicTitle"].ToString(),
-                                Convert.ToInt32(reader["Total"])));
+                            while (reader.Read())
+                            {
+                                results.Add(new KeyValuePair<string, int>(
+                                    reader["ComicTitle"].ToString(),
+                                    Convert.ToInt32(reader["Total"])));
+                            }
                         }
                     }
                 }
+            }
+            catch
+            {
+                return results;
             }
 
             return results;
