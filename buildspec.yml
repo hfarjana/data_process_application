@@ -8,8 +8,8 @@ phases:
 
   build:
     commands:
-      - echo Building solution
-      - msbuild FBZapp.sln /p:Configuration=Release
+      - echo Building MVC web application
+      - msbuild FBZapp.Mvc/FBZapp.Mvc.csproj /p:Configuration=Release
       - echo Build completed successfully
 
 artifacts:
