@@ -4,14 +4,28 @@ phases:
   install:
     commands:
       - echo Restoring NuGet packages
-      - nuget restore FBZapp.sln
+      - nuget restore .\FBZapp.sln
 
   build:
     commands:
-      - echo Building solution
-      - msbuild FBZapp.sln /p:Configuration=Release
-      - echo Build completed successfully
+      - echo Cleaning Elastic Beanstalk bundle folder
+      - if (Test-Path "$env:CODEBUILD_SRC_DIR\beanstalk_bundle") { Remove-Item -Recurse -Force "$env:CODEBUILD_SRC_DIR\beanstalk_bundle" }
+      - New-Item -ItemType Directory -Force -Path "$env:CODEBUILD_SRC_DIR\beanstalk_bundle"
+
+      - echo Creating MSDeploy package for MVC application
+      - msbuild .\FBZapp.Mvc\FBZapp.Mvc.csproj /t:Package /p:Configuration=Release
+
+      - echo Copying MSDeploy package into Beanstalk bundle
+      - $package = Get-ChildItem ".\FBZapp.Mvc\obj\Release\Package" -Filter "*.zip" | Select-Object -First 1
+      - Copy-Item $package.FullName "$env:CODEBUILD_SRC_DIR\beanstalk_bundle\FBZapp.Mvc.zip" -Force
+
+      - echo Creating correct Elastic Beanstalk Windows deployment manifest
+      - '@{ manifestVersion = 1; deployments = @{ msDeploy = @(@{ name = "FBZapp.Mvc"; parameters = @{ appBundle = "FBZapp.Mvc.zip"; iisPath = "/" } }) } } | ConvertTo-Json -Depth 10 | Out-File "$env:CODEBUILD_SRC_DIR\beanstalk_bundle\aws-windows-deployment-manifest.json" -Encoding ascii'
+
+      - echo Listing final Elastic Beanstalk bundle
+      - Get-ChildItem "$env:CODEBUILD_SRC_DIR\beanstalk_bundle" -Recurse
 
 artifacts:
+  base-directory: beanstalk_bundle
   files:
     - '**/*'
