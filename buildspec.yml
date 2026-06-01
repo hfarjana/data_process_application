@@ -8,15 +8,13 @@ phases:
 
   build:
     commands:
-      - echo Cleaning publish folder
-      - if (Test-Path "$env:CODEBUILD_SRC_DIR\published_site") { Remove-Item -Recurse -Force "$env:CODEBUILD_SRC_DIR\published_site" }
-      - New-Item -ItemType Directory -Force -Path "$env:CODEBUILD_SRC_DIR\published_site"
-      - echo Publishing MVC web application
-      - msbuild .\FBZapp.Mvc\FBZapp.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:publishUrl="$env:CODEBUILD_SRC_DIR\published_site"
-      - echo Listing published files
-      - Get-ChildItem "$env:CODEBUILD_SRC_DIR\published_site" -Recurse
+      - echo Building and packaging MVC web application
+      - msbuild .\FBZapp.Mvc\FBZapp.Mvc.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=false
+      - echo Listing packaged MVC files
+      - Get-ChildItem .\FBZapp.Mvc\obj\Release\Package\PackageTmp -Recurse
+      - echo Build and package completed successfully
 
 artifacts:
+  base-directory: FBZapp.Mvc/obj/Release/Package/PackageTmp
   files:
     - '**/*'
-  base-directory: published_site
